@@ -1,0 +1,10 @@
+name: SquidAV
+main: io.github.noket.SquidAV
+version: 1.8.8
+author: Noket
+description: A plugin that detects and destroys any malicious players.
+
+commands:
+  verify:
+    description: Verifies a player for being OP
+    usage: /verify [player]
