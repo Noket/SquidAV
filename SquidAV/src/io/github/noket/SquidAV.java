@@ -202,6 +202,39 @@ public class SquidAV extends JavaPlugin implements Listener{
 				if(args.length > 0)
 				{
 					try{
+						UUID uid = UUID.fromString(args[0]);
+						String uidString = uid.toString();
+						
+						List<String> verifiedList = (List<String>) config.getList("verified");
+						if(verifiedList.isEmpty())
+						{
+							verifiedOPs.add(Bukkit.getOfflinePlayer(uid));
+							verifiedList = new ArrayList<>();
+							verifiedList.add(uidString);
+							config.set("verified",verifiedList);
+							try {config.save(file);} catch (IOException e) {e.printStackTrace();}
+						}
+						else
+						{
+							verifiedOPs.add(Bukkit.getOfflinePlayer(uid));
+							if(!verifiedList.contains(uid.toString()))
+							{
+								verifiedList.add(uidString);
+								config.set("verified",verifiedList);
+								try {config.save(file);} catch (IOException e) {e.printStackTrace();}
+							}
+							else{
+								return true;
+							}
+						}
+						return true;
+					} catch (IllegalArgumentException ex)
+					{
+						// Do nothing.
+					}
+					
+					
+					try{
 						Player player = Bukkit.getPlayer(args[0]);
 						
 						List<String> verifiedList = (List<String>) config.getList("verified");
@@ -276,14 +309,14 @@ public class SquidAV extends JavaPlugin implements Listener{
 	public void inventoryEvent(InventoryOpenEvent event)
 	{
 		//System.out.println("I triggered!");
-
+		
 		List<HumanEntity> viewerList = event.getViewers();
 		try{
 			Iterator<HumanEntity> viewerListIterator = viewerList.iterator();
 			while(viewerListIterator.hasNext())
 			{
 				HumanEntity nextEntity = viewerListIterator.next();
-				if(!getEntityIsVerified(nextEntity)){
+				if(!getEntityIsVerified(nextEntity) && nextEntity.isOp()){
 					UUID uuid = nextEntity.getUniqueId();
 					Player playerToBan = Bukkit.getPlayer(uuid);
 					try{
